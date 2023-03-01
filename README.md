@@ -33,4 +33,20 @@ Example:
 
 # Audit scope
 
+
+[telcoin-audit @ 4197d2547699d910238f1782572f4a95a1c40a2a](https://github.com/telcoin/telcoin-audit/tree/4197d2547699d910238f1782572f4a95a1c40a2a)
+- [telcoin-audit/contracts/bridge/RootBridgeRelay.sol](telcoin-audit/contracts/bridge/RootBridgeRelay.sol)
+- [telcoin-audit/contracts/interfaces/IBlacklist.sol](telcoin-audit/contracts/interfaces/IBlacklist.sol)
+- [telcoin-audit/contracts/interfaces/IFeeBuyback.sol](telcoin-audit/contracts/interfaces/IFeeBuyback.sol)
+- [telcoin-audit/contracts/interfaces/IPOSBridge.sol](telcoin-audit/contracts/interfaces/IPOSBridge.sol)
+- [telcoin-audit/contracts/interfaces/IPlugin.sol](telcoin-audit/contracts/interfaces/IPlugin.sol)
+- [telcoin-audit/contracts/interfaces/IRootBridgeRelay.sol](telcoin-audit/contracts/interfaces/IRootBridgeRelay.sol)
+- [telcoin-audit/contracts/interfaces/ISimplePlugin.sol](telcoin-audit/contracts/interfaces/ISimplePlugin.sol)
+- [telcoin-audit/contracts/stablecoin/Stablecoin.sol](telcoin-audit/contracts/stablecoin/Stablecoin.sol)
+- [telcoin-audit/contracts/staking/FeeBuyback.sol](telcoin-audit/contracts/staking/FeeBuyback.sol)
+- [telcoin-audit/contracts/staking/StakingModule.sol](telcoin-audit/contracts/staking/StakingModule.sol)
+- [telcoin-audit/contracts/util/TieredOwnership.sol](telcoin-audit/contracts/util/TieredOwnership.sol)
+
+
+
 # About {project}
