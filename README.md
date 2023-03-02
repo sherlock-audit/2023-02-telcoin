@@ -1,5 +1,9 @@
+# Telcoin contest details
 
-# [project name] contest details
+![hardhat](https://img.shields.io/badge/hardhat-^2.12.5-blue)
+![coverage](https://img.shields.io/badge/coverage-+80%25-yellowgreen)
+![comments](https://img.shields.io/badge/comments-+85%25-yellowgreen)
+![please](https://img.shields.io/badge/node-v16.19.0-brightgreen.svg)
 
 - Join [Sherlock Discord](https://discord.gg/MABEWyASkp)
 - Submit findings using the issue page in your private contest repo (label issues as med or high)
@@ -7,72 +11,56 @@
 
 # Resources
 
-- [[resource1]](url)
-- [[resource2]](url)
+These products will be interacting with a diverse number of third party providers, both on and off chain:
+1. [Polygon](https://wiki.polygon.technology/docs/category/calling-contracts)
+2. [1inch](https://docs.1inch.io/)
+3. [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/)
 
 # On-chain context
-
-The README is a **very important** document for the audit. Please fill it out thoroughly and include any other specific info that security experts will need in order to effectively review the codebase.
-
-**Some pointers for filling out the section below:**  
-ERC20/ERC721/ERC777/FEE-ON-TRANSFER/REBASING TOKENS:  
-*Which tokens do you expect will interact with the smart contracts? Please note that these answers have a significant impact on the issues that will be submitted by Watsons. Please list specific tokens (ETH, USDC, DAI) where possible, otherwise "Any"/"None" type answers are acceptable as well.*
-
-ADMIN:
-*Admin/owner of the protocol/contracts.
-Label as TRUSTED, If you **don't** want to receive issues about the admin of the contract being able to steal funds. 
-If you want to receive issues about the Admin of the contract being able to steal funds, label as RESTRICTED & list specific acceptable/unacceptable actions for the admins.*
-
-EXTERNAL ADMIN:
-*These are admins of the protocols your contracts integrate with (if any). 
-If you **don't** want to receive issues about this Admin being able to steal funds or result in loss of funds, label as TRUSTED
-If you want to receive issues about this admin being able to steal or result in loss of funds, label as RESTRICTED.*
- 
 ```
-DEPLOYMENT: [e.g. mainnet, Arbitrum, Optimism, ..]
-ERC20: [e.g. any, none, USDC, USDC and USDT]
-ERC721: [e.g. any, none, UNI-V3]
-ERC777: [e.g. any, none, {token name}]
-FEE-ON-TRANSFER: [e.g. any, none, {token name}]
-REBASING TOKENS: [e.g. any, none, {token name}]
-ADMIN: [trusted, restricted, n/a]
-EXTERNAL-ADMINS: [trusted, restricted, n/a]
+DEPLOYMENT: mainnet, polygon
+ERC20: Telcoin, Stablecoins, Supported tokens (see link below)
+FEE-ON-TRANSFER: sending token is used as fee
+ADMIN: gnosis safes, see diagrams
+EXTERNAL-ADMINS: see trusted authorities 
+```
+[Supported ERC20s](https://tokenlists.org/token-list?url=https://raw.githubusercontent.com/telcoin/token-lists/master/telcoins.json)
+
+**Bridge**:
+`contracts/bridge/RootBridgeRelay.sol`: The goal of this contract is to work with the existing [Polygon POS bridge](https://wiki.polygon.technology/docs/category/calling-contracts) in order to enable bridging of any token to be support by the Telcoin platform, including but not limited to the list [here](https://tokenlists.org/token-list?url=https://raw.githubusercontent.com/telcoin/token-lists/master/telcoins.json), with the exception of bridging MATIC. This will work hand in hand with the stablecoins to be released as it will be used for the migration from Ethereum to Polygon. 
+
+**Stablecoin**:
+This single contract, `contracts/stablecoin/Stablecoin.sol`, will be deployed multiple times for different variations of fiat currencies behind proxies.
+
+**Staking**:
+This was initially included in a previous audit. Some minor changes have been made. You can find its description [here](https://app.sherlock.xyz/audits/contests/25).
+
+1. `FeeBuyback.sol` now takes in the safe as a parameter to allow different safes to be associated with different users.
+2. `StakingModule.sol`
+   1. Claim and exiting functions have been changed to affect behavior of tokens so that the latest set of rewards are not left behind.
+   2. The delay module on the migrator has been removed.
+
+# Running Tests
+
+To get started, all you should need to install dependencies and run the unit tests are here.
+```shell
+npm install
+npx hardhat test
 ```
 
+If you are having issues, try cleaning the environment.
+```shell
+npx hardhat clean
+```
 
-Please answer the following questions to provide more context: 
-### Q: Are there any additional protocol roles? If yes, please explain in detail:
-1) The roles
-2) The actions those roles can take 
-3) Outcomes that are expected from those roles 
-4) Specific actions/outcomes NOT intended to be possible for those roles
-
-A: 
-
-___
-### Q: Is the code/contract expected to comply with any EIPs? Are there specific assumptions around adhering to those EIPs that Watsons should be aware of?
-A:
-
-___
-
-### Q: Please list any known issues/acceptable risks that should not result in a valid finding.
-A: 
-
-____
-### Q: Please provide links to previous audits (if any).
-A:
-
-___
-
-### Q: Are there any off-chain mechanisms or off-chain procedures for the protocol (keeper bots, input validation expectations, etc)? 
-A: 
-_____
-
-### Q: In case of external protocol integrations, are the risks of an external protocol pausing or executing an emergency withdrawal acceptable? If not, Watsons will submit issues related to these situations that can harm your protocol's functionality. 
-A: [ACCEPTABLE/NOT ACCEPTABLE] 
-
+For coverage, please run these commands.
+```shell
+npx hardhat coverage
+npx hardhat clean
+```
 
 # Audit scope
+All contract within the `contracts` directory are within the scope of this audit, with the exception of all contracts within the `contracts/test` directory. These contracts are used for hardhat's unit tests only. There is a slight caveat to this however. Though many of the contracts in this directory are for testing purposes only and are either not contracts that Telcoin has deployed or is responsible for, some are slightly augmented versions of other contracts inside the scope. The reason for this is to facilitate testing. Namely, the `RootBridgeRelay.sol` is an existing contract behind a proxy. Due to the nature of how this contract is currently in use, it makes more sense to have hardcoded values when switching between implementations, rather than reinitializing the contracts. In the test version, a constructor is used instead to allow for passing in the addresses of these generated dependencies. When using manual review, we suggest auditors stick to all non-test based contracts. For automated tools and unit tests are used, the reverse may be beneficial. 
 
 
 [telcoin-audit @ 4197d2547699d910238f1782572f4a95a1c40a2a](https://github.com/telcoin/telcoin-audit/tree/4197d2547699d910238f1782572f4a95a1c40a2a)
@@ -88,6 +76,50 @@ A: [ACCEPTABLE/NOT ACCEPTABLE]
 - [telcoin-audit/contracts/staking/StakingModule.sol](telcoin-audit/contracts/staking/StakingModule.sol)
 - [telcoin-audit/contracts/util/TieredOwnership.sol](telcoin-audit/contracts/util/TieredOwnership.sol)
 
+# Diagrams
 
+Here are some supplementary diagrams to help visualize how contracts will interact with one another. 
 
-# About [project name]
+![](telcoin-audit/diagrams/UML_FBB.svg)
+Image 1: Fee buy back contract arrangement
+
+![](telcoin-audit/diagrams/Composition_FBB.svg)
+Image 2: Data package distribution
+
+# About Telcoin
+**Telcoin** is designed to complement telecom, mobile money, and e-wallet partners globally with both traditional fiat and blockchain transaction rails that underpin our fast and affordable digital financial service offerings. Telcoin combines the best parts of the burgeoning DeFi ecosystem with our compliance-first approach to each market, ensuring that the company takes on a fraction of traditional financial counterparty, execution, and custody risks.
+
+```
+                                     ttttttttttttttt,                           
+                              *tttttttttttttttttttttttt,                        
+                       *tttttttttttttttttttttttttttttttttt,                     
+                ,tttttttttttttttttttttttttttttttttttttttttttt,                  
+          .ttttttttttttttttttttttttttttttttttttttttttttttttttttt.               
+        ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt.            
+       ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt.         
+      ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt       
+     .ttttttttttttttttttttttttttttttttt    ttttttttttttttttttttttttttttttttt.   
+     tttttttttttttttttttttttttttttttt     *ttttttttttttttttttttttttttttttttttt. 
+     ttttttttttttttttttttttttttttt.       ttttttttttttttttttttttttttttttttttttt,
+    *ttttttttttttttttttttttttt,          ************ttttttttttttttttttttttttttt
+    tttttttttttttttttttttttt                        tttttttttttttttttttttttttttt
+   *ttttttttttttttttttttttt*                        ttttttttttttttttttttttttttt,
+   ttttttttttttttttttttttttttttt        *tttttttttttttttttttttttttttttttttttttt 
+  ,tttttttttttttttttttttttttttt,       ,tttttttttttttttttttttttttttttttttttttt* 
+  ttttttttttttttttttttttttttttt        ttttttttttttttttttttttttttttttttttttttt  
+  tttttttttttttttttttttttttttt.       ,ttttttttttttttttttttttttttttttttttttttt  
+ ttttttttttttttttttttttttttttt        ttttttttttttttttttttttttttttttttttttttt   
+ ttttttttttttttttttttttttttttt        ttttttttttttttttttttttttttttttttttttttt   
+ ttttttttttttttttttttttttttttt         *********tttttttttttttttttttttttttttt.   
+ ttttttttttttttttttttttttttttt*                 tttttttttttttttttttttttttttt    
+  *ttttttttttttttttttttttttttttt               tttttttttttttttttttttttttttt*    
+    .tttttttttttttttttttttttttttttttttttttttttt*ttttttttttttttttttttttttttt     
+       .ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt     
+          .ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt      
+             .tttttttttttttttttttttttttttttttttttttttttttttttttttttttttt,       
+                .ttttttttttttttttttttttttttttttttttttttttttttttttttttt          
+                   ,ttttttttttttttttttttttttttttttttttttttttttt*                
+                      ,ttttttttttttttttttttttttttttttttt*                       
+                         ,tttttttttttttttttttttttt.                             
+                            ,*ttttttttttttt.                                    
+```
