@@ -20,7 +20,9 @@ These products will be interacting with a diverse number of third party provider
 ```
 DEPLOYMENT: mainnet, polygon
 ERC20: Telcoin, Stablecoins, Supported tokens (see link below)
-FEE-ON-TRANSFER: sending token is used as fee
+FEE-ON-TRANSFER: none
+ADMIN: Trusted(Gnosis multisig)
+EXTERNAL-ADMINS: Trusted (See Trusted authorities)
 ```
 [Supported ERC20s](https://tokenlists.org/token-list?url=https://raw.githubusercontent.com/telcoin/token-lists/master/telcoins.json)
 
